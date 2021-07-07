@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import "./input.css"
 
-const Input = ({}) => {
+const Input = () => {
     const dispatch = useDispatch();
     const [country, setCountry] = useState('');
     const [candidates, setCandidates] = useState([]);
@@ -48,7 +48,7 @@ const Input = ({}) => {
             <div className="candidates" style={{display: show ? 'block' : 'none'}}>
                 {candidates && candidates.length > 0 && candidates.map((item, index)=>(
                     <div key={index} className="d-flex align-items-center border-bottom-1 py-2 px-2 candidate" onClick={()=>handleSetCountry(item)}>
-                        <img src={item.flag} width="25" height="20" className="mr-3" />
+                        <img src={item.flag} width="25" height="20" className="mr-3" alt={item.name} />
                         <p className="mb-0">
                             <b>{item.name}</b>
                             <span className=" ms-1" >({item.nativeName})</span>

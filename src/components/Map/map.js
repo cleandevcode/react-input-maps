@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux'
 import { compose, withProps } from "recompose";
 import {
   withScriptjs,

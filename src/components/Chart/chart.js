@@ -15,9 +15,11 @@ const CHART_ID = 'pieChart';
 const PieChart = ({ value, category, data, title }) => {
 
     useEffect(() => {
-    am4core.useTheme(am4themes_animated);
-    loadChart();
-  }, [data]);
+        if(data) {
+            am4core.useTheme(am4themes_animated);
+            loadChart();    
+        }
+    }, [data]);
 
   const loadChart = () => {
     var chart = am4core.create(CHART_ID, am4charts.PieChart);
