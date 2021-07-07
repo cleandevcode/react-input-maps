@@ -1,78 +1,109 @@
-import React, { useEffect, useRef } from 'react';
-import * as am4core from "@amcharts/amcharts4/core";
-import * as am4charts from "@amcharts/amcharts4/charts";
-import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+} from '@material-ui/core';
+import * as am4core from '@amcharts/amcharts4/core';
+import * as am4charts from '@amcharts/amcharts4/charts';
+import am4themes_animated from '@amcharts/amcharts4/themes/animated';
+import "./chart.css"
 
-const Chart = () => {
-    const chartRef = useRef();
-    const candidates = useSelector(state=>state.country.candidates);
+const CHART_ID = 'pieChart';
 
-    useEffect(()=>{
-        if (!chartRef.current) {
-            const data = [];
-            chartRef.current = am4core.create(chartdiv, am4charts.XYChart);
-            candidates.map((item)=>{
-                data.push({})
-            })
-            chartRef.current.data = data;
-      
-            // // Add X Axis
-            // let xAxis = chartRef.current.xAxes.push(new am4charts.CategoryAxis());
-            // xAxis.dataFields.category = "year";
-            // xAxis.renderer.cellStartLocation = 0.1;
-            // xAxis.renderer.cellEndLocation = 0.9;
-            // xAxis.renderer.grid.template.strokeOpacity = 0;
-            // xAxis.renderer.labels.template.fill = am4core.color('#ced1e0');
-            // xAxis.renderer.labels.template.fontSize = 12;
-      
-            // // Add Y Axis
-            // let yAxis = chartRef.current.yAxes.push(new am4charts.ValueAxis());
-            // yAxis.renderer.grid.template.stroke = am4core.color('#f0f2fa');
-            // yAxis.renderer.grid.template.strokeOpacity = 1;
-            // yAxis.renderer.labels.template.fill = am4core.color('#ced1e0');
-            // yAxis.renderer.labels.template.fontSize = 12;
-            
-            // // Create series
-            // let series = chartRef.current.series.push(new am4charts.ColumnSeries());
-            // series.dataFields.valueY = "population";
-            // series.dataFields.categoryX = "year";
-            // series.name = "Population";
-            // series.fillOpacity = 1;
-            // series.fill = am4core.color('#e5408f');
-            // series.strokeWidth = 0;
-            // series.columns.template.column.cornerRadiusTopLeft = 5;
-            // series.columns.template.column.cornerRadiusTopRight = 5;
-            
-            // // Series tooltip
-            // series.tooltipText = '{categoryX}: [bold]{valueY}[/]';
-            // series.tooltip.pointerOrientation = 'down';
-            // series.tooltip.dy = -5;
-            // series.tooltip.background.filters.clear()
-            // series.tooltip.getFillFromObject = false;
-            // series.tooltip.background.fill = am4core.color('#2a2b2e');
-            // series.tooltip.background.stroke = am4core.color('#2a2b2e');
-      
-      
-            // // Add cursor
-            // chartRef.current.cursor = new am4charts.XYCursor();
-      
-            // // Disable axis lines
-            // chartRef.current.cursor.lineX.disabled = true;
-            // chartRef.current.cursor.lineY.disabled = true;
-      
-            // // Disable axis tooltips
-            // xAxis.cursorTooltipEnabled = false;
-            // yAxis.cursorTooltipEnabled = false;
-      
-            // // Disable zoom
-            // chartRef.current.cursor.behavior = 'none';
-          }
-    },[candidates]);
+const PieChart = ({ value, category, data, title }) => {
 
-    return (
-        <div id="chartdiv" ref={chartRef}></div>
-    )
-}
+    useEffect(() => {
+    am4core.useTheme(am4themes_animated);
+    loadChart();
+  }, [data]);
 
-export default Chart
+  const loadChart = () => {
+    var chart = am4core.create(CHART_ID, am4charts.PieChart);
+
+    // Add and configure Series
+    var pieSeries = chart.series.push(new am4charts.PieSeries());
+    pieSeries.dataFields.value = value;
+    pieSeries.dataFields.category = category;
+
+    // Let's cut a hole in our Pie chart the size of 30% the radius
+    chart.innerRadius = am4core.percent(30);
+
+    // Put a thick white border around each Slice
+    pieSeries.slices.template.stroke = am4core.color('#fff');
+    pieSeries.slices.template.strokeWidth = 2;
+    pieSeries.slices.template.strokeOpacity = 1;
+    // change the cursor on hover to make it apparent the object can be interacted with
+    pieSeries.slices.template.cursorOverStyle = [
+      {
+        property: 'cursor',
+        value: 'pointer'
+      }
+    ];
+
+    pieSeries.alignLabels = false;
+    pieSeries.ticks.template.events.on('ready', hideSmall);
+    pieSeries.ticks.template.events.on('visibilitychanged', hideSmall);
+    pieSeries.labels.template.events.on('ready', hideSmall);
+    pieSeries.labels.template.events.on('visibilitychanged', hideSmall);
+
+    // pieSeries.tooltipText = `{category}[/]
+
+    //                             Value: [bold] {value}$
+    //                             `;
+    // pieSeries.tooltip.pointerOrientation = 'vertical';
+
+    pieSeries.ticks.template.disabled = true;
+
+    // Create a base filter effect (as if it's not there) for the hover to return to
+    var shadow = pieSeries.slices.template.filters.push(
+      new am4core.DropShadowFilter()
+    );
+    shadow.opacity = 0;
+
+    // Create hover state
+    var hoverState = pieSeries.slices.template.states.getKey('hover'); // normally we have to create the hover state, in this case it already exists
+
+    // Slightly shift the shadow and make it more prominent on hover
+    var hoverShadow = hoverState.filters.push(new am4core.DropShadowFilter());
+    hoverShadow.opacity = 0.7;
+    hoverShadow.blur = 5;
+
+    // Add a legend
+    chart.legend = new am4charts.Legend();
+    chart.legend.position = 'right';
+    chart.legend.valign = 'top';
+
+    // chart.legend.maxHeight = 350;
+    chart.legend.maxWidth = undefined;
+    chart.legend.scrollable = true;
+    chart.data = data;
+  };
+
+  const hideSmall = (ev) => {
+    ev.target.hide();
+  };
+
+  return (
+    <Card>
+      <CardHeader title={title} />
+      <Divider />
+      <CardContent>
+        <div>
+          <div id={CHART_ID} className="pieChart"></div>
+          <div>
+            {data?.length > 0 &&
+              data.map((item, idx) => (
+                <div key={idx}>
+                  <div></div>
+                </div>
+              ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default PieChart;
