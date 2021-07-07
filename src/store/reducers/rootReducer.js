@@ -1,4 +1,4 @@
-import countryReducer from "./searchReducer";
+import countryReducer from "./countryReducer";
 
 import { combineReducers } from "redux";
 

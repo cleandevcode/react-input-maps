@@ -1,0 +1,23 @@
+.country-input {
+  height: 50px;
+  font-size: 20px;
+  padding-left: 15px;
+}
+
+.candidates {
+  height: 200px;
+  overflow: auto;
+}
+
+.candidates .candidate:hover {
+  cursor: pointer;
+  background: lightskyblue;
+}
+
+.border-bottom-1 {
+  border-bottom: 1px solid grey;
+}
+
+.mr-3 {
+  margin-right: 0.5rem;
+}
