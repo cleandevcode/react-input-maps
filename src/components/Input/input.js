@@ -34,11 +34,17 @@ const Input = () => {
     }
 
     const handleSetCountry = (item) => {
+        let temp = [];
+        temp.push(item);
         setShow(false);
         setCountry(item.name)
         dispatch({
             type: 'SET_COUNTRY',
             payload: item
+        })
+        dispatch({
+            type: 'SET_COUNTRY_CANDIDATES',
+            payload: temp
         })
     }
     
